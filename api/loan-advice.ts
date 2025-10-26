@@ -86,11 +86,8 @@ async function callLettaAgent(agentId: string, message: string): Promise<string>
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        messages: [{
-          role: "user",
-          content: message
-        }],
-        stream: false
+        role: "user",
+        content: message
       }),
     });
 
@@ -100,24 +97,31 @@ async function callLettaAgent(agentId: string, message: string): Promise<string>
       throw new Error(`Letta API error: ${response.status}`);
     }
 
-    interface LettaMessage {
-      role: string;
-      content?: string;
-      text?: string;
-    }
-
-    interface LettaResponse {
-      messages?: LettaMessage[];
-    }
-
-    const data: LettaResponse = await response.json();
-
-    // Extract the assistant's message from Letta response
-    const assistantMessage = data.messages?.find((msg) => msg.role === "assistant");
+    const data: any = await response.json();
     
-    const responseText = assistantMessage?.content || assistantMessage?.text;
+    console.log("Letta API response:", JSON.stringify(data));
+
+    // Letta API can return different response formats
+    // Try to extract the response text from various possible structures
+    let responseText = '';
+    
+    if (data.messages && Array.isArray(data.messages)) {
+      // Format 1: Array of messages
+      const assistantMessage = data.messages.find((msg: any) => msg.role === "assistant");
+      responseText = assistantMessage?.content || assistantMessage?.text || '';
+    } else if (data.content) {
+      // Format 2: Direct content field
+      responseText = data.content;
+    } else if (data.text) {
+      // Format 3: Direct text field
+      responseText = data.text;
+    } else if (typeof data === 'string') {
+      // Format 4: Direct string response
+      responseText = data;
+    }
     
     if (!responseText) {
+      console.error("Could not extract response from Letta API. Full response:", data);
       throw new Error("No response from Letta agent");
     }
 
