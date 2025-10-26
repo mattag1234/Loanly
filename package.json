@@ -5,6 +5,7 @@
       "dependencies": {
             "@hookform/resolvers": "^5.2.2",
             "@jsr/supabase__supabase-js": "^2.49.8",
+            "@letta-ai/letta-client": "^0.0.68665",
             "@radix-ui/react-accordion": "^1.2.3",
             "@radix-ui/react-alert-dialog": "^1.1.6",
             "@radix-ui/react-aspect-ratio": "^1.1.2",
