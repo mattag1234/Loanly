@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -6,20 +8,33 @@ import { Label } from "./ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { DollarSign, Calendar, FileText, CheckCircle, Loader2 } from "lucide-react";
 import { CredibilityGauge } from "./CredibilityGauge";
+import { loanApplicationSchema, LoanApplicationFormData, defaultLoanApplicationValues } from "../schemas/loanApplicationSchema";
+import { toast } from "sonner";
 
 export function ApplyPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit: handleFormSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm<LoanApplicationFormData>({
+    resolver: zodResolver(loanApplicationSchema),
+    defaultValues: defaultLoanApplicationValues,
+  });
+
+  const handleSubmit = (data: LoanApplicationFormData) => {
+    console.log("Form data:", data);
     setIsSubmitting(true);
 
     // Show loading for 2 seconds
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSubmitted(true);
+      toast.success("Application submitted successfully!");
 
       // Show result after another 2 seconds
       setTimeout(() => {
@@ -33,12 +48,12 @@ export function ApplyPage() {
     return (
       <div className="max-w-4xl mx-auto">
         <Card className="p-12 text-center">
-          <CheckCircle className="w-16 h-16 text-[#1ABC9C] mx-auto mb-4" />
+          <CheckCircle className="w-16 h-16 text-primary mx-auto mb-4" />
           <h2 className="text-3xl text-gray-900 mb-4">✅ Application Submitted</h2>
           <p className="text-xl text-gray-600 mb-8">
             We're calculating your Credibility Index using AI insights...
           </p>
-          <Loader2 className="w-12 h-12 text-[#1ABC9C] mx-auto animate-spin" />
+          <Loader2 className="w-12 h-12 text-primary mx-auto animate-spin" />
         </Card>
       </div>
     );
@@ -54,8 +69,8 @@ export function ApplyPage() {
           </h2>
           <CredibilityGauge score={82} />
           <div className="text-center mt-8">
-            <div className="inline-block bg-[#1ABC9C]/10 px-6 py-3 rounded-lg mb-6">
-              <p className="text-xl text-[#1ABC9C]">
+            <div className="inline-block bg-primary/10 px-6 py-3 rounded-lg mb-6">
+              <p className="text-xl text-primary">
                 Low Risk – You're likely to qualify for a loan!
               </p>
             </div>
@@ -80,7 +95,7 @@ export function ApplyPage() {
       </div>
 
       <Card className="p-8">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleFormSubmit(handleSubmit)}>
           <div className="space-y-6">
             {/* Loan Amount */}
             <div>
@@ -92,8 +107,11 @@ export function ApplyPage() {
                   type="number"
                   placeholder="5000"
                   className="pl-10"
-                  required
+                  {...register("loanAmount", { valueAsNumber: true })}
                 />
+                {errors.loanAmount && (
+                  <p className="text-sm text-error mt-1">{errors.loanAmount.message}</p>
+                )}
               </div>
             </div>
 

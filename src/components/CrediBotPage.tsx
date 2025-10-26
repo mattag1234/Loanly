@@ -10,6 +10,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import { Switch } from "./ui/switch";
 import { Bot, Send, Settings, TrendingUp, TrendingDown, CheckCircle, User, Loader2, AlertCircle } from "lucide-react";
 import { sendChatMessage } from "../utils/ai-api";
+import { useUser } from "../contexts/UserContext";
 
 interface Message {
   id: number;
@@ -19,11 +20,14 @@ interface Message {
 }
 
 export function CrediBotPage() {
+  const { profile } = useUser();
+  const userName = `${profile.firstName} ${profile.lastName}`;
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
       sender: "bot",
-      text: "Hi! I'm Mr. LoanLy, your AI financial assistant. I can help you understand your Credibility Index, analyze your financial health, and provide personalized insights. How can I help you today?",
+      text: `Hi ${profile.firstName}! I'm Mr. LoanLy, your AI financial assistant. I can help you understand your Credibility Index, analyze your financial health, and provide personalized insights. How can I help you today?`,
       timestamp: "10:30 AM"
     },
     {
@@ -98,9 +102,10 @@ export function CrediBotPage() {
       };
 
       setMessages(prev => [...prev, botResponse]);
-    } catch (err: any) {
-      console.error("Error calling AI:", err);
-      setError(err.message || "Failed to get AI response");
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error("Failed to get AI response");
+      console.error("Error calling AI:", error);
+      setError(error.message);
       
       // Add error message to chat
       const errorMessage: Message = {
@@ -278,12 +283,12 @@ export function CrediBotPage() {
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-4">
             <Avatar className="w-12 h-12 bg-gradient-to-br from-[#1ABC9C] to-[#16A085]">
-              <div className="flex items-center justify-center w-full h-full text-white">
-                <User className="w-6 h-6" />
+              <div className="flex items-center justify-center w-full h-full text-white font-semibold">
+                {profile.firstName[0]}{profile.lastName[0]}
               </div>
             </Avatar>
             <div>
-              <h3 className="text-gray-900">Alex Morgan</h3>
+              <h3 className="text-gray-900">{userName}</h3>
               <p className="text-sm text-gray-600">Premium Member</p>
             </div>
           </div>

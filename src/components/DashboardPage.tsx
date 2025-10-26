@@ -2,16 +2,19 @@ import { CredibilityGauge } from "./CredibilityGauge";
 import { MetricCard } from "./MetricCard";
 import { LoanOfferCard } from "./LoanOfferCard";
 import { Card } from "./ui/card";
-import { 
-  TrendingUp, 
-  Briefcase, 
-  PieChart, 
-  CreditCard, 
-  Activity 
+import { TooltipProvider } from "./ui/tooltip";
+import { useUser } from "../contexts/UserContext";
+import {
+  TrendingUp,
+  Briefcase,
+  PieChart,
+  CreditCard,
+  Activity
 } from "lucide-react";
 
 export function DashboardPage() {
-  const userName = "John Doe";
+  const { profile } = useUser();
+  const userName = `${profile.firstName} ${profile.lastName}`;
   const credibilityScore = 82;
 
   const metrics = [
@@ -48,6 +51,7 @@ export function DashboardPage() {
   ];
 
   return (
+    <TooltipProvider>
     <div>
       {/* Header */}
       <div className="mb-12">
@@ -95,19 +99,19 @@ export function DashboardPage() {
             <h3 className="text-lg text-gray-800 mb-4">How to Improve Your CI</h3>
             <ul className="space-y-3 text-gray-600">
               <li className="flex items-start gap-2">
-                <span className="text-[#1ABC9C] mt-1">•</span>
+                <span className="text-primary mt-1">•</span>
                 <span>Maintain consistent income sources</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-[#1ABC9C] mt-1">•</span>
+                <span className="text-primary mt-1">•</span>
                 <span>Reduce overall debt obligations</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-[#1ABC9C] mt-1">•</span>
+                <span className="text-primary mt-1">•</span>
                 <span>Always pay bills on time</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-[#1ABC9C] mt-1">•</span>
+                <span className="text-primary mt-1">•</span>
                 <span>Build emergency savings</span>
               </li>
             </ul>
@@ -115,5 +119,6 @@ export function DashboardPage() {
         </div>
       </div>
     </div>
+    </TooltipProvider>
   );
 }
