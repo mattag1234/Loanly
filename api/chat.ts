@@ -86,8 +86,12 @@ async function callLettaAgent(agentId: string, message: string): Promise<string>
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        role: "user",
-        content: message
+        messages: [
+          {
+            role: "user",
+            content: message
+          }
+        ]
       }),
     });
 
