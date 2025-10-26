@@ -1,46 +1,48 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { DollarSign, Calendar, FileText, CheckCircle, Loader2 } from "lucide-react";
-import { CredibilityGauge } from "./CredibilityGauge";
-import { loanApplicationSchema, LoanApplicationFormData, defaultLoanApplicationValues } from "../schemas/loanApplicationSchema";
+import { DollarSign, Calendar, FileText, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useApplication, ApplicationData } from "../contexts/ApplicationContext";
 
-export function ApplyPage() {
-  const { setApplicationData, metrics } = useApplication();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [showResult, setShowResult] = useState(false);
-  const [formData, setFormData] = useState<any>({});
+interface ApplyPageProps {
+  onNavigateToDashboard: () => void;
+}
 
-  const {
-    register,
-    handleSubmit: handleFormSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm<LoanApplicationFormData>({
-    resolver: zodResolver(loanApplicationSchema),
-    defaultValues: defaultLoanApplicationValues,
+export function ApplyPage({ onNavigateToDashboard }: ApplyPageProps) {
+  const { setApplicationData, calculateMetrics } = useApplication();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    loanAmount: "5000",
+    loanPurpose: "debt",
+    loanTerm: "12",
+    employmentStatus: "fulltime",
+    monthlyIncome: "4000",
+    savingsRatio: "10-25",
+    incomeStability: "consistent",
+    missedPayments: "0",
+    debtToIncome: "0-20"
   });
 
-  const handleSubmit = (data: LoanApplicationFormData) => {
-    console.log("Form data:", data);
-    console.log("Local formData state:", formData);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    console.log("=== FORM SUBMISSION STARTED ===");
+    console.log("Form data:", formData);
+    
     setIsSubmitting(true);
+    toast.loading("Processing your application...", { id: "submit-toast" });
 
-    // Prepare application data using captured formData state
+    // Prepare application data - convert strings to numbers where needed
     const appData: ApplicationData = {
-      loanAmount: formData.loanAmount || data.loanAmount || 5000,
+      loanAmount: parseFloat(formData.loanAmount) || 5000,
       loanPurpose: formData.loanPurpose || "debt",
       loanTerm: formData.loanTerm || "12",
       employmentStatus: formData.employmentStatus || "fulltime",
-      monthlyIncome: formData.monthlyIncome || 4000,
+      monthlyIncome: parseFloat(formData.monthlyIncome) || 4000,
       savingsRatio: formData.savingsRatio || "10-25",
       incomeStability: formData.incomeStability || "consistent",
       missedPayments: formData.missedPayments || "0",
@@ -50,69 +52,38 @@ export function ApplyPage() {
 
     console.log("Saving application data:", appData);
     
-    // Save to context and calculate metrics
+    // Calculate metrics first to get the score
+    const calculatedMetrics = calculateMetrics(appData);
+    const score = calculatedMetrics.credibilityScore;
+    
+    // Save to context
     setApplicationData(appData);
 
-    // Show loading for 2 seconds
+    // Show loading for 2 seconds, then redirect
     setTimeout(() => {
       setIsSubmitting(false);
-      setIsSubmitted(true);
-      toast.success("Application submitted successfully!");
+      toast.dismiss("submit-toast");
+      
+      // Show beautiful success message with the calculated score
+      toast.success(`Application Approved! Score: ${score}`, {
+        duration: 2500,
+        style: {
+          background: '#10B981',
+          color: 'white',
+          fontSize: '16px',
+          fontWeight: '600',
+          padding: '16px 24px',
+          borderRadius: '12px',
+        },
+      });
 
-      // Show result after another 2 seconds
+      // Redirect to Dashboard after 1 second
       setTimeout(() => {
-        setShowResult(true);
-      }, 2000);
+        console.log("Navigating to Dashboard with score:", score);
+        onNavigateToDashboard();
+      }, 1000);
     }, 2000);
   };
-
-  // Success screen after submission
-  if (isSubmitted && !showResult) {
-    return (
-      <div className="max-w-4xl mx-auto">
-        <Card className="p-12 text-center">
-          <CheckCircle className="w-16 h-16 text-primary mx-auto mb-4" />
-          <h2 className="text-3xl text-gray-900 mb-4">✅ Application Submitted</h2>
-          <p className="text-xl text-gray-600 mb-8">
-            We're calculating your Credibility Index using AI insights...
-          </p>
-          <Loader2 className="w-12 h-12 text-primary mx-auto animate-spin" />
-        </Card>
-      </div>
-    );
-  }
-
-  // Result screen
-  if (showResult) {
-    const score = metrics?.credibilityScore || 82;
-    const riskLevel = score >= 80 ? "Low Risk" : score >= 60 ? "Medium Risk" : "High Risk";
-    const message = score >= 80 ? "You're likely to qualify for a loan!" : 
-                    score >= 60 ? "You may qualify with some conditions" :
-                    "Consider improving your metrics before applying";
-    
-    return (
-      <div className="max-w-4xl mx-auto">
-        <Card className="p-12">
-          <h2 className="text-3xl text-center text-gray-900 mb-8">
-            Your Application Results
-          </h2>
-          <CredibilityGauge score={score} />
-          <div className="text-center mt-8">
-            <div className="inline-block bg-primary/10 px-6 py-3 rounded-lg mb-6">
-              <p className="text-xl text-primary">
-                {riskLevel} – {message}
-              </p>
-            </div>
-            <div>
-              <Button className="bg-[#1ABC9C] hover:bg-[#16A085]">
-                View Dashboard
-              </Button>
-            </div>
-          </div>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -124,7 +95,7 @@ export function ApplyPage() {
       </div>
 
       <Card className="p-8">
-        <form onSubmit={handleFormSubmit(handleSubmit)}>
+        <form onSubmit={handleSubmit} noValidate>
           <div className="space-y-6">
             {/* Loan Amount */}
             <div>
@@ -136,19 +107,19 @@ export function ApplyPage() {
                   type="number"
                   placeholder="5000"
                   className="pl-10"
-                  {...register("loanAmount")}
-                  onChange={(e) => setFormData({...formData, loanAmount: Number(e.target.value)})}
+                  value={formData.loanAmount}
+                  onChange={(e) => setFormData({...formData, loanAmount: e.target.value})}
                 />
-                {errors.loanAmount && (
-                  <p className="text-sm text-error mt-1">{errors.loanAmount.message}</p>
-                )}
               </div>
             </div>
 
             {/* Loan Purpose */}
             <div>
               <Label htmlFor="purpose">Select purpose</Label>
-              <Select onValueChange={(value) => setFormData({...formData, loanPurpose: value})}>
+              <Select 
+                value={formData.loanPurpose}
+                onValueChange={(value) => setFormData({...formData, loanPurpose: value})}
+              >
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select purpose" />
                 </SelectTrigger>
@@ -166,7 +137,10 @@ export function ApplyPage() {
             {/* Loan Term */}
             <div>
               <Label htmlFor="term">Select term</Label>
-              <Select onValueChange={(value) => setFormData({...formData, loanTerm: value})}>
+              <Select 
+                value={formData.loanTerm}
+                onValueChange={(value) => setFormData({...formData, loanTerm: value})}
+              >
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select term" />
                 </SelectTrigger>
@@ -182,7 +156,10 @@ export function ApplyPage() {
             {/* Employment Status */}
             <div>
               <Label htmlFor="employment">Employment Status</Label>
-              <Select onValueChange={(value) => setFormData({...formData, employmentStatus: value})}>
+              <Select 
+                value={formData.employmentStatus}
+                onValueChange={(value) => setFormData({...formData, employmentStatus: value})}
+              >
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
@@ -206,7 +183,8 @@ export function ApplyPage() {
                   type="number"
                   placeholder="4000"
                   className="pl-10"
-                  onChange={(e) => setFormData({...formData, monthlyIncome: Number(e.target.value)})}
+                  value={formData.monthlyIncome}
+                  onChange={(e) => setFormData({...formData, monthlyIncome: e.target.value})}
                 />
               </div>
             </div>
@@ -214,7 +192,10 @@ export function ApplyPage() {
             {/* Savings Ratio */}
             <div>
               <Label htmlFor="savings">What percentage of your income do you typically save?</Label>
-              <Select onValueChange={(value) => setFormData({...formData, savingsRatio: value})}>
+              <Select 
+                value={formData.savingsRatio}
+                onValueChange={(value) => setFormData({...formData, savingsRatio: value})}
+              >
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select savings ratio" />
                 </SelectTrigger>
@@ -230,7 +211,10 @@ export function ApplyPage() {
             {/* Income Stability */}
             <div>
               <Label htmlFor="stability">How stable is your income each month?</Label>
-              <Select onValueChange={(value) => setFormData({...formData, incomeStability: value})}>
+              <Select 
+                value={formData.incomeStability}
+                onValueChange={(value) => setFormData({...formData, incomeStability: value})}
+              >
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select stability" />
                 </SelectTrigger>
@@ -245,7 +229,10 @@ export function ApplyPage() {
             {/* Missed Payments */}
             <div>
               <Label htmlFor="missed">How many payments have you missed in the last 12 months?</Label>
-              <Select onValueChange={(value) => setFormData({...formData, missedPayments: value})}>
+              <Select 
+                value={formData.missedPayments}
+                onValueChange={(value) => setFormData({...formData, missedPayments: value})}
+              >
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select number" />
                 </SelectTrigger>
@@ -261,7 +248,10 @@ export function ApplyPage() {
             {/* Debt-to-Income Ratio */}
             <div>
               <Label htmlFor="debt">Approximate debt-to-income ratio</Label>
-              <Select onValueChange={(value) => setFormData({...formData, debtToIncome: value})}>
+              <Select 
+                value={formData.debtToIncome}
+                onValueChange={(value) => setFormData({...formData, debtToIncome: value})}
+              >
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select ratio" />
                 </SelectTrigger>
@@ -278,13 +268,13 @@ export function ApplyPage() {
             <div className="pt-6">
               <Button 
                 type="submit" 
-                className="w-full bg-[#1ABC9C] hover:bg-[#16A085]"
+                className="w-full bg-[#1ABC9C] hover:bg-[#16A085] text-lg py-6"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Submitting...
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Processing Application...
                   </>
                 ) : (
                   "Submit Application"

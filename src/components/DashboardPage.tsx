@@ -14,7 +14,11 @@ import {
   Activity
 } from "lucide-react";
 
-export function DashboardPage() {
+interface DashboardPageProps {
+  onNavigateToLoanOffer: () => void;
+}
+
+export function DashboardPage({ onNavigateToLoanOffer }: DashboardPageProps) {
   const { profile } = useUser();
   const { metrics } = useApplication();
   const userName = `${profile.firstName} ${profile.lastName}`;
@@ -95,7 +99,7 @@ export function DashboardPage() {
         {/* Right Column - Loan Offer */}
         <div className="lg:col-span-1">
           <h2 className="text-2xl text-gray-800 mb-6">Loan Offer</h2>
-          <LoanOfferCard />
+          <LoanOfferCard onNavigate={onNavigateToLoanOffer} />
 
           {/* Future Goals Section */}
           <Card className="mt-6 p-6">

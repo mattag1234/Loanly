@@ -11,6 +11,7 @@ import { Switch } from "./ui/switch";
 import { Bot, Send, Settings, TrendingUp, TrendingDown, CheckCircle, User, Loader2, AlertCircle } from "lucide-react";
 import { sendChatMessage } from "../utils/ai-api";
 import { useUser } from "../contexts/UserContext";
+import { useApplication } from "../contexts/ApplicationContext";
 
 interface Message {
   id: number;
@@ -21,7 +22,9 @@ interface Message {
 
 export function CrediBotPage() {
   const { profile } = useUser();
+  const { metrics } = useApplication();
   const userName = `${profile.firstName} ${profile.lastName}`;
+  const credibilityScore = metrics?.credibilityScore || 82;
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -39,7 +42,7 @@ export function CrediBotPage() {
     {
       id: 3,
       sender: "bot",
-      text: "Your current Credibility Index is 82/100, which places you in the Low Risk tier. This is excellent! Your strong payment history and stable income are the main contributors to this score.",
+      text: `Your current Credibility Index is ${credibilityScore}/100, which places you in the ${credibilityScore >= 80 ? 'Low Risk' : credibilityScore >= 60 ? 'Medium Risk' : 'High Risk'} tier. ${credibilityScore >= 80 ? 'This is excellent!' : credibilityScore >= 60 ? 'This is good progress!' : 'There is room for improvement.'} Your strong payment history and stable income are the main contributors to this score.`,
       timestamp: "10:31 AM"
     },
     {
@@ -308,7 +311,7 @@ export function CrediBotPage() {
             </div>
           </div>
           <Badge className="bg-[#1ABC9C]/10 text-[#1ABC9C] hover:bg-[#1ABC9C]/20">
-            Credibility Index: 82/100
+            Credibility Index: {credibilityScore}/100
           </Badge>
         </Card>
 

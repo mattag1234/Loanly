@@ -6,6 +6,7 @@ import { ApplyPage } from "./components/ApplyPage";
 import { InsightsPage } from "./components/InsightsPage";
 import { CrediBotPage } from "./components/CrediBotPage";
 import { ProfilePage } from "./components/ProfilePage";
+import { LoanOfferDetailsPage } from "./components/LoanOfferDetailsPage";
 import { Toaster } from "sonner";
 import { UserProvider } from "./contexts/UserContext";
 import { ApplicationProvider } from "./contexts/ApplicationContext";
@@ -16,17 +17,19 @@ export default function App() {
   const renderContent = () => {
     switch (currentTab) {
       case "Dashboard":
-        return <DashboardPage />;
+        return <DashboardPage onNavigateToLoanOffer={() => setCurrentTab("Loan Offer")} />;
       case "Apply":
-        return <ApplyPage />;
+        return <ApplyPage onNavigateToDashboard={() => setCurrentTab("Dashboard")} />;
       case "Insights":
         return <InsightsPage />;
       case "Mr. LoanLy":
         return <CrediBotPage />;
       case "Profile":
         return <ProfilePage />;
+      case "Loan Offer":
+        return <LoanOfferDetailsPage onBack={() => setCurrentTab("Dashboard")} />;
       default:
-        return <DashboardPage />;
+        return <DashboardPage onNavigateToLoanOffer={() => setCurrentTab("Loan Offer")} />;
     }
   };
 
