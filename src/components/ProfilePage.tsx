@@ -4,8 +4,55 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { User, Mail, Phone, MapPin, Briefcase, Calendar } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+
+interface ProfileData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  employer: string;
+  position: string;
+  startDate: string;
+}
 
 export function ProfilePage() {
+  const [profileData, setProfileData] = useState<ProfileData>({
+    firstName: "John",
+    lastName: "Doe",
+    email: "john.doe@example.com",
+    phone: "+1 (555) 123-4567",
+    address: "123 Main Street, City, ST 12345",
+    employer: "Tech Company Inc.",
+    position: "Software Engineer",
+    startDate: "January 2022"
+  });
+
+  const [originalData, setOriginalData] = useState<ProfileData>(profileData);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleInputChange = (field: keyof ProfileData, value: string) => {
+    setProfileData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    // Here you would typically make an API call to save the data
+    setOriginalData(profileData);
+    setIsEditing(false);
+    toast.success("Profile updated successfully!");
+  };
+
+  const handleCancel = () => {
+    setProfileData(originalData);
+    setIsEditing(false);
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
@@ -19,14 +66,14 @@ export function ProfilePage() {
       <Card className="p-8 mb-8">
         <div className="flex items-center gap-6">
           <Avatar className="w-24 h-24">
-            <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=John" />
-            <AvatarFallback>JD</AvatarFallback>
+            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${originalData.firstName}`} />
+            <AvatarFallback>{originalData.firstName[0]}{originalData.lastName[0]}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <h2 className="text-2xl text-gray-900 mb-1">John Doe</h2>
+            <h2 className="text-2xl text-gray-900 mb-1">{originalData.firstName} {originalData.lastName}</h2>
             <p className="text-gray-600">Member since January 2024</p>
           </div>
-          <Button variant="outline">Change Photo</Button>
+          <Button variant="outline" onClick={() => toast.info("Photo upload feature coming soon!")}>Change Photo</Button>
         </div>
       </Card>
 
@@ -41,7 +88,8 @@ export function ProfilePage() {
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <Input
                   id="firstName"
-                  defaultValue="John"
+                  value={profileData.firstName}
+                  onChange={(e) => handleInputChange("firstName", e.target.value)}
                   className="pl-10"
                 />
               </div>
@@ -52,7 +100,8 @@ export function ProfilePage() {
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <Input
                   id="lastName"
-                  defaultValue="Doe"
+                  value={profileData.lastName}
+                  onChange={(e) => handleInputChange("lastName", e.target.value)}
                   className="pl-10"
                 />
               </div>
@@ -66,7 +115,8 @@ export function ProfilePage() {
               <Input
                 id="email"
                 type="email"
-                defaultValue="john.doe@example.com"
+                value={profileData.email}
+                onChange={(e) => handleInputChange("email", e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -78,7 +128,8 @@ export function ProfilePage() {
               <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
                 id="phone"
-                defaultValue="+1 (555) 123-4567"
+                value={profileData.phone}
+                onChange={(e) => handleInputChange("phone", e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -90,7 +141,8 @@ export function ProfilePage() {
               <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
                 id="address"
-                defaultValue="123 Main Street, City, ST 12345"
+                value={profileData.address}
+                onChange={(e) => handleInputChange("address", e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -108,7 +160,8 @@ export function ProfilePage() {
               <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
                 id="employer"
-                defaultValue="Tech Company Inc."
+                value={profileData.employer}
+                onChange={(e) => handleInputChange("employer", e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -119,7 +172,8 @@ export function ProfilePage() {
               <Label htmlFor="position">Position</Label>
               <Input
                 id="position"
-                defaultValue="Software Engineer"
+                value={profileData.position}
+                onChange={(e) => handleInputChange("position", e.target.value)}
                 className="mt-2"
               />
             </div>
@@ -129,7 +183,8 @@ export function ProfilePage() {
                 <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <Input
                   id="startDate"
-                  defaultValue="January 2022"
+                  value={profileData.startDate}
+                  onChange={(e) => handleInputChange("startDate", e.target.value)}
                   className="pl-10"
                 />
               </div>
@@ -140,8 +195,18 @@ export function ProfilePage() {
 
       {/* Save Button */}
       <div className="flex justify-end gap-4">
-        <Button variant="outline">Cancel</Button>
-        <Button className="bg-[#1ABC9C] hover:bg-[#16A085]">
+        <Button
+          variant="outline"
+          onClick={handleCancel}
+          disabled={!isEditing}
+        >
+          Cancel
+        </Button>
+        <Button
+          className="bg-[#1ABC9C] hover:bg-[#16A085]"
+          onClick={handleSave}
+          disabled={!isEditing}
+        >
           Save Changes
         </Button>
       </div>

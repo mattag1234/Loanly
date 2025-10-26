@@ -13,7 +13,8 @@ export function Navbar({ currentTab, onTabChange }: NavbarProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 flex items-center gap-2">
+            <img src="/logo.png" alt="LoanLy Logo" className="w-8 h-8 object-contain" />
             <span className="text-2xl text-[#1ABC9C]">LoanLy</span>
           </div>
 
@@ -23,11 +24,10 @@ export function Navbar({ currentTab, onTabChange }: NavbarProps) {
               <button
                 key={tab}
                 onClick={() => onTabChange(tab)}
-                className={`px-1 pt-1 pb-1 transition-colors ${
-                  currentTab === tab
-                    ? "text-[#1ABC9C] border-b-2 border-[#1ABC9C]"
-                    : "text-gray-600 hover:text-[#1ABC9C]"
-                }`}
+                className={`px-1 pt-1 pb-1 transition-colors ${currentTab === tab
+                  ? "text-[#1ABC9C] border-b-2 border-[#1ABC9C]"
+                  : "text-gray-600 hover:text-[#1ABC9C]"
+                  }`}
               >
                 {tab}
               </button>
