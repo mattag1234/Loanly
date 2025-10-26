@@ -14,9 +14,9 @@ import {
 } from "lucide-react";
 
 export function DashboardPage() {
-  const { profile } = useUser();
+  const { profile, loanApplication } = useUser();
   const userName = `${profile.firstName} ${profile.lastName}`;
-  const credibilityScore = 82;
+  const credibilityScore = loanApplication?.credibilityIndex || 82;
 
   const metrics = [
     {

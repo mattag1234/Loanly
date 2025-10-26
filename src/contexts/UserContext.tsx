@@ -11,9 +11,22 @@ export interface UserProfile {
   startDate: string;
 }
 
+export interface LoanApplication {
+  credibilityIndex: number;
+  approvedAmount: number;
+  interestRate: number;
+  monthlyPayment: number;
+  totalPayment: number;
+  term: number;
+  requestedAmount: number;
+  appliedDate: string;
+}
+
 interface UserContextType {
   profile: UserProfile;
   updateProfile: (profile: UserProfile) => void;
+  loanApplication: LoanApplication | null;
+  updateLoanApplication: (application: LoanApplication) => void;
 }
 
 const defaultProfile: UserProfile = {
@@ -31,13 +44,18 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile>(defaultProfile);
+  const [loanApplication, setLoanApplication] = useState<LoanApplication | null>(null);
 
   const updateProfile = (newProfile: UserProfile) => {
     setProfile(newProfile);
   };
 
+  const updateLoanApplication = (application: LoanApplication) => {
+    setLoanApplication(application);
+  };
+
   return (
-    <UserContext.Provider value={{ profile, updateProfile }}>
+    <UserContext.Provider value={{ profile, updateProfile, loanApplication, updateLoanApplication }}>
       {children}
     </UserContext.Provider>
   );

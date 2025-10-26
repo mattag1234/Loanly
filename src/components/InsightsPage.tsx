@@ -1,5 +1,6 @@
 import { Card } from "./ui/card";
 import { TrendingUp, TrendingDown, AlertCircle, CheckCircle } from "lucide-react";
+import React from "react";
 
 export function InsightsPage() {
   const insights = [

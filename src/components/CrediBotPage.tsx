@@ -11,7 +11,7 @@ import { Switch } from "./ui/switch";
 import { Bot, Send, Settings, TrendingUp, TrendingDown, CheckCircle, User, Loader2, AlertCircle } from "lucide-react";
 import { sendChatMessage } from "../utils/ai-api";
 import { useUser } from "../contexts/UserContext";
-
+import React from "react";
 interface Message {
   id: number;
   sender: "user" | "bot";
@@ -128,9 +128,9 @@ export function CrediBotPage() {
   };
 
   return (
-    <div className="flex gap-6 max-h-[calc(100vh-200px)] min-h-[600px]">
+    <div className="flex gap-6">
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col">
         {/* Chat Header */}
         <Card className="p-4 mb-4 bg-gradient-to-r from-[#1ABC9C] to-[#16A085] flex-shrink-0">
           <div className="flex items-center justify-between">
@@ -199,8 +199,8 @@ export function CrediBotPage() {
         </Card>
 
         {/* Chat Messages */}
-        <Card className="flex-1 p-6 mb-4 flex flex-col overflow-hidden">
-          <ScrollArea className="flex-1 pr-4" ref={scrollAreaRef}>
+        <Card className="flex-1 mb-4 overflow-hidden flex flex-col">
+          <ScrollArea className="h-[500px] px-6 py-4" ref={scrollAreaRef}>
             <div className="space-y-4">
               {messages.map((message) => (
                 <div
@@ -278,7 +278,7 @@ export function CrediBotPage() {
       </div>
 
       {/* Metrics Sidebar */}
-      <div className="w-80 space-y-4 flex-shrink-0 overflow-y-auto max-h-[calc(100vh-200px)]">
+      <div className="w-80 space-y-4 flex-shrink-0">
         {/* User Info Card */}
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-4">
