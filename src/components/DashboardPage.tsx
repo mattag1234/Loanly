@@ -1,3 +1,4 @@
+import React from "react";
 import { CredibilityGauge } from "./CredibilityGauge";
 import { MetricCard } from "./MetricCard";
 import { LoanOfferCard } from "./LoanOfferCard";
