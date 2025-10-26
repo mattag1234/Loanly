@@ -128,11 +128,11 @@ export function CrediBotPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-140px)] gap-6">
+    <div className="flex h-[calc(100vh-200px)] gap-6 pb-6">
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-h-0">
         {/* Chat Header */}
-        <Card className="p-4 mb-4 bg-gradient-to-r from-[#1ABC9C] to-[#16A085]">
+        <Card className="p-4 mb-4 bg-gradient-to-r from-[#1ABC9C] to-[#16A085] flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
@@ -199,8 +199,8 @@ export function CrediBotPage() {
         </Card>
 
         {/* Chat Messages */}
-        <Card className="flex-1 p-6 mb-4">
-          <ScrollArea className="h-full pr-4" ref={scrollAreaRef}>
+        <Card className="flex-1 p-6 mb-4 flex flex-col min-h-0 overflow-hidden">
+          <ScrollArea className="flex-1 pr-4" ref={scrollAreaRef}>
             <div className="space-y-4">
               {messages.map((message) => (
                 <div
@@ -253,7 +253,7 @@ export function CrediBotPage() {
         </Card>
 
         {/* Input Area */}
-        <Card className="p-4">
+        <Card className="p-4 flex-shrink-0">
           <div className="flex gap-3">
             <Input
               placeholder="Ask Mr. LoanLy about your financial health..."

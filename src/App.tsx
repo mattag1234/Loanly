@@ -8,6 +8,7 @@ import { CrediBotPage } from "./components/CrediBotPage";
 import { ProfilePage } from "./components/ProfilePage";
 import { Toaster } from "sonner";
 import { UserProvider } from "./contexts/UserContext";
+import { ApplicationProvider } from "./contexts/ApplicationContext";
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState("Dashboard");
@@ -31,16 +32,18 @@ export default function App() {
 
   return (
     <UserProvider>
-      <div className="min-h-screen bg-background-light">
-        <Navbar currentTab={currentTab} onTabChange={setCurrentTab} />
+      <ApplicationProvider>
+        <div className="min-h-screen bg-background-light">
+          <Navbar currentTab={currentTab} onTabChange={setCurrentTab} />
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {renderContent()}
-        </main>
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            {renderContent()}
+          </main>
 
-        <Footer />
-        <Toaster position="top-right" richColors />
-      </div>
+          <Footer />
+          <Toaster position="top-right" richColors />
+        </div>
+      </ApplicationProvider>
     </UserProvider>
   );
 }

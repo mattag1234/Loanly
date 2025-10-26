@@ -10,11 +10,14 @@ import { DollarSign, Calendar, FileText, CheckCircle, Loader2 } from "lucide-rea
 import { CredibilityGauge } from "./CredibilityGauge";
 import { loanApplicationSchema, LoanApplicationFormData, defaultLoanApplicationValues } from "../schemas/loanApplicationSchema";
 import { toast } from "sonner";
+import { useApplication, ApplicationData } from "../contexts/ApplicationContext";
 
 export function ApplyPage() {
+  const { setApplicationData, metrics } = useApplication();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
+  const [formData, setFormData] = useState<any>({});
 
   const {
     register,
@@ -29,6 +32,21 @@ export function ApplyPage() {
   const handleSubmit = (data: LoanApplicationFormData) => {
     console.log("Form data:", data);
     setIsSubmitting(true);
+
+    // Prepare application data
+    const appData: ApplicationData = {
+      loanAmount: formData.loanAmount || 5000,
+      monthlyIncome: formData.monthlyIncome || 4000,
+      debtToIncomeRatio: formData.debtToIncome || "0-20",
+      employmentStatus: formData.employmentStatus || "fulltime",
+      savingsRatio: formData.savingsRatio || "10-25",
+      incomeStability: formData.incomeStability || "consistent",
+      missedPayments: formData.missedPayments || "0",
+      submittedAt: new Date(),
+    };
+
+    // Save to context and calculate metrics
+    setApplicationData(appData);
 
     // Show loading for 2 seconds
     setTimeout(() => {
@@ -61,22 +79,28 @@ export function ApplyPage() {
 
   // Result screen
   if (showResult) {
+    const score = metrics?.credibilityScore || 82;
+    const riskLevel = score >= 80 ? "Low Risk" : score >= 60 ? "Medium Risk" : "High Risk";
+    const message = score >= 80 ? "You're likely to qualify for a loan!" : 
+                    score >= 60 ? "You may qualify with some conditions" :
+                    "Consider improving your metrics before applying";
+    
     return (
       <div className="max-w-4xl mx-auto">
         <Card className="p-12">
           <h2 className="text-3xl text-center text-gray-900 mb-8">
             Your Application Results
           </h2>
-          <CredibilityGauge score={82} />
+          <CredibilityGauge score={score} />
           <div className="text-center mt-8">
             <div className="inline-block bg-primary/10 px-6 py-3 rounded-lg mb-6">
               <p className="text-xl text-primary">
-                Low Risk – You're likely to qualify for a loan!
+                {riskLevel} – {message}
               </p>
             </div>
             <div>
               <Button className="bg-[#1ABC9C] hover:bg-[#16A085]">
-                View Loan Offer
+                View Dashboard
               </Button>
             </div>
           </div>
@@ -108,6 +132,7 @@ export function ApplyPage() {
                   placeholder="5000"
                   className="pl-10"
                   {...register("loanAmount")}
+                  onChange={(e) => setFormData({...formData, loanAmount: Number(e.target.value)})}
                 />
                 {errors.loanAmount && (
                   <p className="text-sm text-error mt-1">{errors.loanAmount.message}</p>
@@ -152,7 +177,7 @@ export function ApplyPage() {
             {/* Employment Status */}
             <div>
               <Label htmlFor="employment">Employment Status</Label>
-              <Select required>
+              <Select required onValueChange={(value) => setFormData({...formData, employmentStatus: value})}>
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
@@ -177,6 +202,7 @@ export function ApplyPage() {
                   placeholder="4000"
                   className="pl-10"
                   required
+                  onChange={(e) => setFormData({...formData, monthlyIncome: Number(e.target.value)})}
                 />
               </div>
             </div>
@@ -184,7 +210,7 @@ export function ApplyPage() {
             {/* Savings Ratio */}
             <div>
               <Label htmlFor="savings">What percentage of your income do you typically save?</Label>
-              <Select required>
+              <Select required onValueChange={(value) => setFormData({...formData, savingsRatio: value})}>
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select savings ratio" />
                 </SelectTrigger>
@@ -200,7 +226,7 @@ export function ApplyPage() {
             {/* Income Stability */}
             <div>
               <Label htmlFor="stability">How stable is your income each month?</Label>
-              <Select required>
+              <Select required onValueChange={(value) => setFormData({...formData, incomeStability: value})}>
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select stability" />
                 </SelectTrigger>
@@ -215,7 +241,7 @@ export function ApplyPage() {
             {/* Missed Payments */}
             <div>
               <Label htmlFor="missed">How many payments have you missed in the last 12 months?</Label>
-              <Select required>
+              <Select required onValueChange={(value) => setFormData({...formData, missedPayments: value})}>
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select number" />
                 </SelectTrigger>
@@ -231,7 +257,7 @@ export function ApplyPage() {
             {/* Debt-to-Income Ratio */}
             <div>
               <Label htmlFor="debt">Approximate debt-to-income ratio</Label>
-              <Select required>
+              <Select required onValueChange={(value) => setFormData({...formData, debtToIncome: value})}>
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select ratio" />
                 </SelectTrigger>

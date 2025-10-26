@@ -5,6 +5,7 @@ import { LoanOfferCard } from "./LoanOfferCard";
 import { Card } from "./ui/card";
 import { TooltipProvider } from "./ui/tooltip";
 import { useUser } from "../contexts/UserContext";
+import { useApplication } from "../contexts/ApplicationContext";
 import {
   TrendingUp,
   Briefcase,
@@ -15,38 +16,39 @@ import {
 
 export function DashboardPage() {
   const { profile } = useUser();
+  const { metrics } = useApplication();
   const userName = `${profile.firstName} ${profile.lastName}`;
-  const credibilityScore = 82;
+  const credibilityScore = metrics?.credibilityScore || 82;
 
-  const metrics = [
+  const metricCards = [
     {
       icon: <TrendingUp className="w-6 h-6" />,
       title: "Income Stability",
-      value: 0.87,
+      value: metrics?.incomeStability || 0.87,
       tooltip: "Measures the consistency and predictability of your income over time."
     },
     {
       icon: <Briefcase className="w-6 h-6" />,
       title: "Employment Tenure",
-      value: 0.72,
+      value: metrics?.employmentTenure || 0.72,
       tooltip: "Reflects how long you've been with your current employer, showing job stability."
     },
     {
       icon: <PieChart className="w-6 h-6" />,
       title: "Debt-to-Income Ratio",
-      value: 0.65,
+      value: metrics?.debtToIncome || 0.65,
       tooltip: "The percentage of your monthly income that goes toward debt payments."
     },
     {
       icon: <CreditCard className="w-6 h-6" />,
       title: "Payment History",
-      value: 0.93,
+      value: metrics?.paymentHistory || 0.93,
       tooltip: "Your track record of making on-time payments on existing obligations."
     },
     {
       icon: <Activity className="w-6 h-6" />,
       title: "Financial Behavior",
-      value: 0.80,
+      value: metrics?.financialBehavior || 0.80,
       tooltip: "Overall financial habits including savings, spending patterns, and account management."
     }
   ];
@@ -78,7 +80,7 @@ export function DashboardPage() {
         <div className="lg:col-span-2">
           <h2 className="text-2xl text-gray-800 mb-6">Your Metrics</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {metrics.map((metric, index) => (
+            {metricCards.map((metric, index) => (
               <MetricCard
                 key={index}
                 icon={metric.icon}
