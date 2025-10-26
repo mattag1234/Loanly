@@ -16,7 +16,7 @@ export function Navbar({ currentTab, onTabChange }: NavbarProps) {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center gap-2">
-            <img src="/logo.png" alt="LoanLy Logo" className="w-8 h-8 object-contain" />
+            <img src="/logo.png" alt="LoanLy Logo" className="w-12 h-12 object-contain" />
             <span className="text-2xl text-primary">LoanLy</span>
           </div>
 
