@@ -1,4 +1,5 @@
-import { projectId, publicAnonKey } from "./supabase/info";
+// API utility functions for Vercel serverless functions
+// No need to import Supabase credentials anymore - using Vercel API routes
 
 export interface LoanFormData {
   income: number;
@@ -16,18 +17,24 @@ export interface AIAdviceResponse {
   error?: string;
 }
 
+// Helper to get the API base URL (works in dev and production)
+function getApiBaseUrl(): string {
+  // In production (Vercel), API routes are relative
+  // In development, they're also relative since Vite proxies them
+  return '';
+}
+
 export async function getAILoanAdvice(
   formData: LoanFormData,
   useLetta: boolean = false
 ): Promise<AIAdviceResponse> {
   try {
     const response = await fetch(
-      `https://${projectId}.supabase.co/functions/v1/make-server-39e3d378/loan-advice`,
+      `${getApiBaseUrl()}/api/loan-advice`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${publicAnonKey}`,
         },
         body: JSON.stringify({
           ...formData,
@@ -56,12 +63,11 @@ export async function sendChatMessage(
 ): Promise<string> {
   try {
     const response = await fetch(
-      `https://${projectId}.supabase.co/functions/v1/make-server-39e3d378/chat`,
+      `${getApiBaseUrl()}/api/chat`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${publicAnonKey}`,
         },
         body: JSON.stringify({
           message,
