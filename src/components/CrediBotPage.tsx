@@ -82,9 +82,20 @@ export function CrediBotPage() {
     setError(null);
 
     try {
+      // Build conversation history for context (last 5 messages)
+      const recentMessages = messages.slice(-5);
+      const conversationContext = recentMessages
+        .map(msg => `${msg.sender === 'user' ? 'User' : 'Assistant'}: ${msg.text}`)
+        .join('\n');
+      
+      // Create full message with context
+      const messageWithContext = useLetta && conversationContext 
+        ? `Previous conversation:\n${conversationContext}\n\nCurrent question: ${currentInput}`
+        : currentInput;
+
       // Call the backend API using utility function
       const aiResponse = await sendChatMessage(
-        currentInput,
+        messageWithContext,
         {
           income: 5000,
           debt: 1400,
