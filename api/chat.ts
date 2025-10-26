@@ -79,17 +79,16 @@ async function callLettaAgent(agentId: string, message: string): Promise<string>
   }
 
   try {
-    const response = await fetch("https://api.letta.com/v1/agents/message", {
+    const response = await fetch(`https://api.letta.com/v1/agents/${agentId}/messages`, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${lettaApiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        agent_id: agentId,
         messages: [{
           role: "user",
-          text: message
+          content: message
         }],
         stream: false
       }),
@@ -103,6 +102,7 @@ async function callLettaAgent(agentId: string, message: string): Promise<string>
 
     interface LettaMessage {
       role: string;
+      content?: string;
       text?: string;
     }
 
@@ -115,11 +115,13 @@ async function callLettaAgent(agentId: string, message: string): Promise<string>
     // Extract the assistant's message from Letta response
     const assistantMessage = data.messages?.find((msg) => msg.role === "assistant");
     
-    if (!assistantMessage?.text) {
+    const responseText = assistantMessage?.content || assistantMessage?.text;
+    
+    if (!responseText) {
       throw new Error("No response from Letta agent");
     }
 
-    return assistantMessage.text;
+    return responseText;
   } catch (error) {
     console.error(`Error calling Letta:`, error);
     throw error;
