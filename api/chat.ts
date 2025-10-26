@@ -159,34 +159,32 @@ async function callLettaAgent(agentId: string, message: string): Promise<string>
   }
 }
 
-async function processWithAI(formData: LoanFormData, useLetta: boolean = false): Promise<string> {
+async function processWithAI(userMessage: string, formData: LoanFormData, useLetta: boolean = false): Promise<string> {
   try {
-    // Step 1: Get analysis from Google AI Studio
-    console.log("Calling Google AI Studio...");
-    const googleAnalysis = await callGoogleAI(formData);
-    console.log("Google AI analysis received");
-
-    // Step 2: If Letta is enabled, try to enhance with Letta agent
+    // If Letta is enabled, send user message directly to Letta (it maintains conversation state)
     if (useLetta) {
       console.log("Calling Letta agent...");
       try {
         const lettaAgentId = process.env.LETTA_AGENT_ID;
         
         if (!lettaAgentId) {
-          console.warn("LETTA_AGENT_ID not set, skipping Letta enhancement");
-          return googleAnalysis;
+          console.warn("LETTA_AGENT_ID not set, falling back to Google AI");
+          // Fall through to Google AI
+        } else {
+          const lettaResponse = await callLettaAgent(lettaAgentId, userMessage);
+          console.log("Letta response received successfully");
+          return lettaResponse;
         }
-        
-        const lettaResponse = await callLettaAgent(lettaAgentId, googleAnalysis);
-        console.log("Letta response received successfully");
-        return lettaResponse;
       } catch (lettaError: any) {
         console.error("Letta API failed, falling back to Google AI only:", lettaError.message);
-        // Return Google AI result if Letta fails
-        return googleAnalysis;
+        // Fall through to Google AI
       }
     }
 
+    // Use Google AI (either as fallback or when Letta is off)
+    console.log("Calling Google AI Studio...");
+    const googleAnalysis = await callGoogleAI(formData);
+    console.log("Google AI analysis received");
     return googleAnalysis;
   } catch (error) {
     console.error(`Error in AI processing:`, error);
@@ -232,7 +230,7 @@ export default async function handler(
     console.log(`Processing chat message with AI (Letta: ${useLetta})`);
     
     // Process the user message with AI context
-    const aiResponse = await processWithAI(formData, useLetta);
+    const aiResponse = await processWithAI(message, formData, useLetta);
 
     return res.status(200).json({ 
       success: true,

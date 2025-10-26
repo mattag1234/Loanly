@@ -82,20 +82,24 @@ export function CrediBotPage() {
     setError(null);
 
     try {
-      // Build conversation history for context (last 5 messages)
-      const recentMessages = messages.slice(-5);
-      const conversationContext = recentMessages
-        .map(msg => `${msg.sender === 'user' ? 'User' : 'Assistant'}: ${msg.text}`)
-        .join('\n');
+      // For Letta, just send the user's question directly (Letta maintains its own conversation memory)
+      // For Google AI, we need to provide context manually
+      let messageToSend = currentInput;
       
-      // Create full message with context
-      const messageWithContext = useLetta && conversationContext 
-        ? `Previous conversation:\n${conversationContext}\n\nCurrent question: ${currentInput}`
-        : currentInput;
+      if (!useLetta) {
+        // Build conversation history for Google AI (last 3 exchanges)
+        const recentMessages = messages.slice(-6); // Last 3 exchanges (6 messages)
+        if (recentMessages.length > 0) {
+          const conversationContext = recentMessages
+            .map(msg => `${msg.sender === 'user' ? 'User' : 'Assistant'}: ${msg.text}`)
+            .join('\n');
+          messageToSend = `Previous conversation:\n${conversationContext}\n\nCurrent question: ${currentInput}`;
+        }
+      }
 
       // Call the backend API using utility function
       const aiResponse = await sendChatMessage(
-        messageWithContext,
+        messageToSend,
         {
           income: 5000,
           debt: 1400,

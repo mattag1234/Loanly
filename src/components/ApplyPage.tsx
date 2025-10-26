@@ -31,11 +31,12 @@ export function ApplyPage() {
 
   const handleSubmit = (data: LoanApplicationFormData) => {
     console.log("Form data:", data);
+    console.log("Local formData state:", formData);
     setIsSubmitting(true);
 
-    // Prepare application data
+    // Prepare application data using captured formData state
     const appData: ApplicationData = {
-      loanAmount: formData.loanAmount || 5000,
+      loanAmount: formData.loanAmount || data.loanAmount || 5000,
       monthlyIncome: formData.monthlyIncome || 4000,
       debtToIncomeRatio: formData.debtToIncome || "0-20",
       employmentStatus: formData.employmentStatus || "fulltime",
@@ -45,6 +46,8 @@ export function ApplyPage() {
       submittedAt: new Date(),
     };
 
+    console.log("Saving application data:", appData);
+    
     // Save to context and calculate metrics
     setApplicationData(appData);
 
