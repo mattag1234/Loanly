@@ -37,12 +37,14 @@ export function ApplyPage() {
     // Prepare application data using captured formData state
     const appData: ApplicationData = {
       loanAmount: formData.loanAmount || data.loanAmount || 5000,
-      monthlyIncome: formData.monthlyIncome || 4000,
-      debtToIncomeRatio: formData.debtToIncome || "0-20",
+      loanPurpose: formData.loanPurpose || "debt",
+      loanTerm: formData.loanTerm || "12",
       employmentStatus: formData.employmentStatus || "fulltime",
+      monthlyIncome: formData.monthlyIncome || 4000,
       savingsRatio: formData.savingsRatio || "10-25",
       incomeStability: formData.incomeStability || "consistent",
       missedPayments: formData.missedPayments || "0",
+      debtToIncomeRatio: formData.debtToIncome || "0-20",
       submittedAt: new Date(),
     };
 
@@ -146,7 +148,7 @@ export function ApplyPage() {
             {/* Loan Purpose */}
             <div>
               <Label htmlFor="purpose">Select purpose</Label>
-              <Select required>
+              <Select required onValueChange={(value) => setFormData({...formData, loanPurpose: value})}>
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select purpose" />
                 </SelectTrigger>
@@ -164,7 +166,7 @@ export function ApplyPage() {
             {/* Loan Term */}
             <div>
               <Label htmlFor="term">Select term</Label>
-              <Select required>
+              <Select required onValueChange={(value) => setFormData({...formData, loanTerm: value})}>
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select term" />
                 </SelectTrigger>
