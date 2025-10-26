@@ -13,6 +13,13 @@ CREATE TABLE kv_store_39e3d378 (
 // @ts-ignore - Deno JSR import
 import { createClient } from "jsr:@supabase/supabase-js@2.49.8";
 
+// Type declaration for Deno
+declare const Deno: {
+  env: {
+    get(key: string): string | undefined;
+  };
+};
+
 const client = () => createClient(
   Deno.env.get("SUPABASE_URL"),
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),

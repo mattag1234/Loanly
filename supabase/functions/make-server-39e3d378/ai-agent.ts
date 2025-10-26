@@ -1,5 +1,12 @@
 // AI Agent integration with Google AI Studio and Letta
 
+// Type declaration for Deno (edge function runtime)
+declare const Deno: {
+  env: {
+    get(key: string): string | undefined;
+  };
+};
+
 interface LoanFormData {
   income: number;
   debt: number;
