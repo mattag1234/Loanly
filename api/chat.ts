@@ -139,13 +139,25 @@ async function processWithAI(formData: LoanFormData, useLetta: boolean = false):
     const googleAnalysis = await callGoogleAI(formData);
     console.log("Google AI analysis received");
 
-    // Step 2: If Letta is enabled, enhance with Letta agent
+    // Step 2: If Letta is enabled, try to enhance with Letta agent
     if (useLetta) {
       console.log("Calling Letta agent...");
-      const lettaAgentId = process.env.LETTA_AGENT_ID || "default-agent";
-      const lettaResponse = await callLettaAgent(lettaAgentId, googleAnalysis);
-      console.log("Letta response received");
-      return lettaResponse;
+      try {
+        const lettaAgentId = process.env.LETTA_AGENT_ID;
+        
+        if (!lettaAgentId) {
+          console.warn("LETTA_AGENT_ID not set, skipping Letta enhancement");
+          return googleAnalysis;
+        }
+        
+        const lettaResponse = await callLettaAgent(lettaAgentId, googleAnalysis);
+        console.log("Letta response received successfully");
+        return lettaResponse;
+      } catch (lettaError: any) {
+        console.error("Letta API failed, falling back to Google AI only:", lettaError.message);
+        // Return Google AI result if Letta fails
+        return googleAnalysis;
+      }
     }
 
     return googleAnalysis;
