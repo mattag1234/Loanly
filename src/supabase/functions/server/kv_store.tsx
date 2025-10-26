@@ -18,7 +18,7 @@ const client = () => createClient(
 );
 
 // Set stores a key-value pair in the database.
-export const set = async (key: string, value: any): Promise<void> => {
+export const set = async (key: string, value: unknown): Promise<void> => {
   const supabase = client()
   const { error } = await supabase.from("kv_store_39e3d378").upsert({
     key,
@@ -30,7 +30,7 @@ export const set = async (key: string, value: any): Promise<void> => {
 };
 
 // Get retrieves a key-value pair from the database.
-export const get = async (key: string): Promise<any> => {
+export const get = async <T = unknown>(key: string): Promise<T | null> => {
   const supabase = client()
   const { data, error } = await supabase.from("kv_store_39e3d378").select("value").eq("key", key).maybeSingle();
   if (error) {
@@ -49,7 +49,7 @@ export const del = async (key: string): Promise<void> => {
 };
 
 // Sets multiple key-value pairs in the database.
-export const mset = async (keys: string[], values: any[]): Promise<void> => {
+export const mset = async (keys: string[], values: unknown[]): Promise<void> => {
   const supabase = client()
   const { error } = await supabase.from("kv_store_39e3d378").upsert(keys.map((k, i) => ({ key: k, value: values[i] })));
   if (error) {
@@ -58,7 +58,7 @@ export const mset = async (keys: string[], values: any[]): Promise<void> => {
 };
 
 // Gets multiple key-value pairs from the database.
-export const mget = async (keys: string[]): Promise<any[]> => {
+export const mget = async <T = unknown>(keys: string[]): Promise<T[]> => {
   const supabase = client()
   const { data, error } = await supabase.from("kv_store_39e3d378").select("value").in("key", keys);
   if (error) {
@@ -77,7 +77,7 @@ export const mdel = async (keys: string[]): Promise<void> => {
 };
 
 // Search for key-value pairs by prefix.
-export const getByPrefix = async (prefix: string): Promise<any[]> => {
+export const getByPrefix = async <T = unknown>(prefix: string): Promise<T[]> => {
   const supabase = client()
   const { data, error } = await supabase.from("kv_store_39e3d378").select("key, value").like("key", prefix + "%");
   if (error) {

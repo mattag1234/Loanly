@@ -101,10 +101,19 @@ export async function callLettaAgent(agentId: string, message: string): Promise<
       throw new Error(`Letta API error: ${response.status}`);
     }
 
-    const data = await response.json();
-    
+    interface LettaMessage {
+      role: string;
+      text?: string;
+    }
+
+    interface LettaResponse {
+      messages?: LettaMessage[];
+    }
+
+    const data: LettaResponse = await response.json();
+
     // Extract the assistant's message from Letta response
-    const assistantMessage = data.messages?.find((msg: any) => msg.role === "assistant");
+    const assistantMessage = data.messages?.find((msg) => msg.role === "assistant");
     
     if (!assistantMessage?.text) {
       throw new Error("No response from Letta agent");

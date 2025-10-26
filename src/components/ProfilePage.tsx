@@ -4,36 +4,21 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { User, Mail, Phone, MapPin, Briefcase, Calendar } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
-
-interface ProfileData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address: string;
-  employer: string;
-  position: string;
-  startDate: string;
-}
+import { useUser, UserProfile } from "../contexts/UserContext";
 
 export function ProfilePage() {
-  const [profileData, setProfileData] = useState<ProfileData>({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 123-4567",
-    address: "123 Main Street, City, ST 12345",
-    employer: "Tech Company Inc.",
-    position: "Software Engineer",
-    startDate: "January 2022"
-  });
-
-  const [originalData, setOriginalData] = useState<ProfileData>(profileData);
+  const { profile, updateProfile } = useUser();
+  const [profileData, setProfileData] = useState<UserProfile>(profile);
   const [isEditing, setIsEditing] = useState(false);
 
-  const handleInputChange = (field: keyof ProfileData, value: string) => {
+  // Sync with context when it changes
+  useEffect(() => {
+    setProfileData(profile);
+  }, [profile]);
+
+  const handleInputChange = (field: keyof UserProfile, value: string) => {
     setProfileData(prev => ({
       ...prev,
       [field]: value
@@ -42,14 +27,14 @@ export function ProfilePage() {
   };
 
   const handleSave = () => {
-    // Here you would typically make an API call to save the data
-    setOriginalData(profileData);
+    // Update the global context
+    updateProfile(profileData);
     setIsEditing(false);
     toast.success("Profile updated successfully!");
   };
 
   const handleCancel = () => {
-    setProfileData(originalData);
+    setProfileData(profile);
     setIsEditing(false);
   };
 
@@ -66,11 +51,11 @@ export function ProfilePage() {
       <Card className="p-8 mb-8">
         <div className="flex items-center gap-6">
           <Avatar className="w-24 h-24">
-            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${originalData.firstName}`} />
-            <AvatarFallback>{originalData.firstName[0]}{originalData.lastName[0]}</AvatarFallback>
+            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.firstName}`} />
+            <AvatarFallback>{profile.firstName[0]}{profile.lastName[0]}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <h2 className="text-2xl text-gray-900 mb-1">{originalData.firstName} {originalData.lastName}</h2>
+            <h2 className="text-2xl text-gray-900 mb-1">{profile.firstName} {profile.lastName}</h2>
             <p className="text-gray-600">Member since January 2024</p>
           </div>
           <Button variant="outline" onClick={() => toast.info("Photo upload feature coming soon!")}>Change Photo</Button>
@@ -203,7 +188,7 @@ export function ProfilePage() {
           Cancel
         </Button>
         <Button
-          className="bg-[#1ABC9C] hover:bg-[#16A085]"
+          className="bg-primary hover:bg-primary-dark"
           onClick={handleSave}
           disabled={!isEditing}
         >

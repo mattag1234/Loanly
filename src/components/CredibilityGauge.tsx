@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { getColorByPercentage, getRiskTier } from "../utils/colors";
 
 interface CredibilityGaugeProps {
   score: number;
@@ -8,7 +9,7 @@ interface CredibilityGaugeProps {
 
 export function CredibilityGauge({ score, maxScore = 100 }: CredibilityGaugeProps) {
   const [animatedScore, setAnimatedScore] = useState(0);
-  
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setAnimatedScore(score);
@@ -23,18 +24,8 @@ export function CredibilityGauge({ score, maxScore = 100 }: CredibilityGaugeProp
   const circumference = normalizedRadius * 2 * Math.PI;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
-  // Determine color based on score
-  const getColor = () => {
-    if (percentage >= 70) return "#1ABC9C"; // Green/Teal - Low risk
-    if (percentage >= 40) return "#F39C12"; // Yellow - Medium risk
-    return "#E74C3C"; // Red - High risk
-  };
-
-  const getTier = () => {
-    if (percentage >= 70) return "Low-Risk Tier";
-    if (percentage >= 40) return "Medium-Risk Tier";
-    return "High-Risk Tier";
-  };
+  const color = getColorByPercentage(percentage);
+  const tier = getRiskTier(percentage);
 
   return (
     <div className="flex flex-col items-center">
@@ -51,7 +42,7 @@ export function CredibilityGauge({ score, maxScore = 100 }: CredibilityGaugeProp
           />
           {/* Animated Progress Circle */}
           <motion.circle
-            stroke={getColor()}
+            stroke={color}
             fill="transparent"
             strokeWidth={strokeWidth}
             strokeDasharray={circumference + " " + circumference}
@@ -73,18 +64,18 @@ export function CredibilityGauge({ score, maxScore = 100 }: CredibilityGaugeProp
             transition={{ delay: 0.5, duration: 0.5 }}
             className="flex items-center justify-center"
           >
-            <div className="text-4xl leading-none" style={{ color: getColor() }}>
+            <div className="text-4xl leading-none" style={{ color }}>
               {Math.round(animatedScore)}
             </div>
             <div className="text-gray-500 leading-none ml-1">/ {maxScore}</div>
           </motion.div>
         </div>
       </div>
-      
+
       <div className="mt-4 text-center">
         <div className="text-gray-700">You're in the</div>
-        <div className="text-xl mt-1" style={{ color: getColor() }}>
-          {getTier()}
+        <div className="text-xl mt-1" style={{ color }}>
+          {tier}
         </div>
       </div>
     </div>

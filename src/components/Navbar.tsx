@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useUser } from "../contexts/UserContext";
 
 interface NavbarProps {
   currentTab: string;
@@ -6,6 +7,7 @@ interface NavbarProps {
 }
 
 export function Navbar({ currentTab, onTabChange }: NavbarProps) {
+  const { profile } = useUser();
   const tabs = ["Dashboard", "Apply", "Insights", "Mr. LoanLy", "Profile"];
 
   return (
@@ -14,8 +16,8 @@ export function Navbar({ currentTab, onTabChange }: NavbarProps) {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center gap-2">
-            <img src="/logo.png" alt="LoanLy Logo" className="w-8 h-8 object-contain" />
-            <span className="text-2xl text-[#1ABC9C]">LoanLy</span>
+            <img src="/logo.png" alt="LoanLy Logo" className="w-12 h-12 object-contain" />
+            <span className="text-2xl text-primary">LoanLy</span>
           </div>
 
           {/* Menu Items */}
@@ -25,8 +27,8 @@ export function Navbar({ currentTab, onTabChange }: NavbarProps) {
                 key={tab}
                 onClick={() => onTabChange(tab)}
                 className={`px-1 pt-1 pb-1 transition-colors ${currentTab === tab
-                  ? "text-[#1ABC9C] border-b-2 border-[#1ABC9C]"
-                  : "text-gray-600 hover:text-[#1ABC9C]"
+                  ? "text-primary border-b-2 border-primary"
+                  : "text-gray-600 hover:text-primary"
                   }`}
               >
                 {tab}
@@ -37,8 +39,8 @@ export function Navbar({ currentTab, onTabChange }: NavbarProps) {
           {/* Profile Avatar */}
           <div className="flex-shrink-0">
             <Avatar>
-              <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=John" />
-              <AvatarFallback>JD</AvatarFallback>
+              <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.firstName}`} />
+              <AvatarFallback>{profile.firstName[0]}{profile.lastName[0]}</AvatarFallback>
             </Avatar>
           </div>
         </div>
