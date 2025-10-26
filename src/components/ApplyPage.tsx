@@ -148,7 +148,7 @@ export function ApplyPage() {
             {/* Loan Purpose */}
             <div>
               <Label htmlFor="purpose">Select purpose</Label>
-              <Select required onValueChange={(value) => setFormData({...formData, loanPurpose: value})}>
+              <Select onValueChange={(value) => setFormData({...formData, loanPurpose: value})}>
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select purpose" />
                 </SelectTrigger>
@@ -166,7 +166,7 @@ export function ApplyPage() {
             {/* Loan Term */}
             <div>
               <Label htmlFor="term">Select term</Label>
-              <Select required onValueChange={(value) => setFormData({...formData, loanTerm: value})}>
+              <Select onValueChange={(value) => setFormData({...formData, loanTerm: value})}>
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select term" />
                 </SelectTrigger>
@@ -182,7 +182,7 @@ export function ApplyPage() {
             {/* Employment Status */}
             <div>
               <Label htmlFor="employment">Employment Status</Label>
-              <Select required onValueChange={(value) => setFormData({...formData, employmentStatus: value})}>
+              <Select onValueChange={(value) => setFormData({...formData, employmentStatus: value})}>
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
@@ -206,7 +206,6 @@ export function ApplyPage() {
                   type="number"
                   placeholder="4000"
                   className="pl-10"
-                  required
                   onChange={(e) => setFormData({...formData, monthlyIncome: Number(e.target.value)})}
                 />
               </div>
@@ -215,7 +214,7 @@ export function ApplyPage() {
             {/* Savings Ratio */}
             <div>
               <Label htmlFor="savings">What percentage of your income do you typically save?</Label>
-              <Select required onValueChange={(value) => setFormData({...formData, savingsRatio: value})}>
+              <Select onValueChange={(value) => setFormData({...formData, savingsRatio: value})}>
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select savings ratio" />
                 </SelectTrigger>
@@ -231,7 +230,7 @@ export function ApplyPage() {
             {/* Income Stability */}
             <div>
               <Label htmlFor="stability">How stable is your income each month?</Label>
-              <Select required onValueChange={(value) => setFormData({...formData, incomeStability: value})}>
+              <Select onValueChange={(value) => setFormData({...formData, incomeStability: value})}>
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select stability" />
                 </SelectTrigger>
@@ -246,7 +245,7 @@ export function ApplyPage() {
             {/* Missed Payments */}
             <div>
               <Label htmlFor="missed">How many payments have you missed in the last 12 months?</Label>
-              <Select required onValueChange={(value) => setFormData({...formData, missedPayments: value})}>
+              <Select onValueChange={(value) => setFormData({...formData, missedPayments: value})}>
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select number" />
                 </SelectTrigger>
@@ -262,7 +261,7 @@ export function ApplyPage() {
             {/* Debt-to-Income Ratio */}
             <div>
               <Label htmlFor="debt">Approximate debt-to-income ratio</Label>
-              <Select required onValueChange={(value) => setFormData({...formData, debtToIncome: value})}>
+              <Select onValueChange={(value) => setFormData({...formData, debtToIncome: value})}>
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Select ratio" />
                 </SelectTrigger>
