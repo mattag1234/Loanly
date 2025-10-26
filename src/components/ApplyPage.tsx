@@ -107,7 +107,7 @@ export function ApplyPage() {
                   type="number"
                   placeholder="5000"
                   className="pl-10"
-                  {...register("loanAmount", { valueAsNumber: true })}
+                  {...register("loanAmount")}
                 />
                 {errors.loanAmount && (
                   <p className="text-sm text-error mt-1">{errors.loanAmount.message}</p>
