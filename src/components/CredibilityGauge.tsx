@@ -38,9 +38,9 @@ export function CredibilityGauge({ score, maxScore = 100 }: CredibilityGaugeProp
 
   return (
     <div className="flex flex-col items-center">
-      <div className="relative w-48 h-48">
+      <div className="relative w-48 h-48 flex items-center justify-center">
         {/* Background Circle */}
-        <svg height={radius * 2} width={radius * 2} className="transform -rotate-90">
+        <svg height={radius * 2} width={radius * 2} className="transform -rotate-90 absolute">
           <circle
             stroke="#E5E7EB"
             fill="transparent"
